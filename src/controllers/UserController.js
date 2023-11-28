@@ -3,7 +3,7 @@ const JwtService = require('../services/JwtService');
 
 const createUser = async (req, res) => {
     try {
-        const { name, email, password,confirmPassword } = req.body
+        const { name, email, password,confirmPassword} = req.body
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
         if (!name || !email || !password || !confirmPassword) {
@@ -34,7 +34,6 @@ const createUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         const {email, password} = req.body
-        console.log(req.body)
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
         if (!email || !password) {
@@ -60,7 +59,6 @@ const loginUser = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const {email} = req.body
-        console.log(req.body)
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
         const isCheckEmail = reg.test(email)
         if (!email) {
@@ -86,7 +84,6 @@ const resetPassword = async (req, res) => {
 const verifyCode = async (req, res) => {
     try {
         const {code} = req.body
-        console.log(req.body)
         if (!code) {
             return res.status(200).json({
                 status: 'ERR',
@@ -174,7 +171,6 @@ const updatePass = async (req, res) => {
 const decodeToken = async (req, res) => {
     try {
         const token = req.body;
-        console.log(token)
         if(!token){
             return res.status(200).json({
                 status: 'ERR',

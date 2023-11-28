@@ -2,6 +2,7 @@ const User = require('../models/UserModel');
 const Code = require('../models/CodeModel');
 const dotenv = require('dotenv');
 dotenv.config();
+const base64ArrayBuffer = require('base64-arraybuffer')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generalAccessToken } = require('./JwtService');
@@ -11,36 +12,39 @@ const EmailService = require('../services/EmailService')
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
-        const {name, email, password} = newUser;
-
-        try{
-            const checkUser = await User.findOne({email:email});
-            if(checkUser){
-                return resolve({
-                    status: 'error',
-                    message: 'Email already exists'
-                })
-            }
-
-            const hashPassword = await bcrypt.hash(password, 10);
-            
-            const createUser = await User.create({
-                name,  
-                email,
-                password: hashPassword,
-            })
-            if(createUser){
-                resolve({
-                    status: 'success',
-                    message: 'Created account successfully',
-                    data: createUser
-                })
-            }
-        }catch(error){
-            reject(error)
+      const { name, email, password, img } = newUser;
+  
+      try {
+        const checkUser = await User.findOne({ email: email });
+        if (checkUser) {
+          return resolve({
+            status: 'error',
+            message: 'Email already exists',
+          });
         }
-    })
-}
+  
+        const hashPassword = await bcrypt.hash(password, 10);
+        const imageBuffer = Buffer.from(img); // Tạo buffer từ dữ liệu ảnh Uint8Array
+  
+        const createUser = await User.create({
+          name,
+          email,
+          password: hashPassword,
+          image: { data: imageBuffer, contentType: 'image/png' }, // Lưu dữ liệu ảnh vào người dùng mới
+        });
+  
+        if (createUser) {
+          resolve({
+            status: 'success',
+            message: 'Created account successfully',
+          });
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+  
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
@@ -164,10 +168,8 @@ const verifyCode = (data) => {
 const decodeToken = (data) => {
     return new Promise(async (resolve, reject) => {
         const {token} = data;
-        console.log(token)
         try{
             const checkToken = await User.findOne({accessToken:token})
-            console.log(checkToken)
             if(checkToken === null){
                 return resolve({
                     status: 'ERR',
@@ -189,10 +191,8 @@ const decodeToken = (data) => {
 const logoutUser = (data) => {
     return new Promise(async (resolve, reject) => {
         const {token} = data;
-        console.log(token)
         try{
             const checkToken = await User.findOne({accessToken:token})
-            console.log(checkToken)
             if(checkToken === null){
                 return resolve({
                     status: 'ERR',
