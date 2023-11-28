@@ -12,7 +12,7 @@ const EmailService = require('../services/EmailService')
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
-      const { name, email, password, img } = newUser;
+      const { name, email, password } = newUser;
   
       try {
         const checkUser = await User.findOne({ email: email });
@@ -24,13 +24,10 @@ const createUser = (newUser) => {
         }
   
         const hashPassword = await bcrypt.hash(password, 10);
-        const imageBuffer = Buffer.from(img); // Tạo buffer từ dữ liệu ảnh Uint8Array
-  
         const createUser = await User.create({
           name,
           email,
           password: hashPassword,
-          image: { data: imageBuffer, contentType: 'image/png' }, // Lưu dữ liệu ảnh vào người dùng mới
         });
   
         if (createUser) {
