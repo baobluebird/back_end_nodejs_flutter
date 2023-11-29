@@ -2,51 +2,48 @@ const User = require('../models/UserModel');
 const Code = require('../models/CodeModel');
 const dotenv = require('dotenv');
 dotenv.config();
-const base64ArrayBuffer = require('base64-arraybuffer')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { generalAccessToken } = require('./JwtService');
 const crypto = require('crypto');
 const EmailService = require('../services/EmailService')
 
 
-const createUser = (newUser) => {
-    return new Promise(async (resolve, reject) => {
-      const { name, email, password } = newUser;
+// const createUser = (newUser) => {
+//     return new Promise(async (resolve, reject) => {
+//       const { name, email, password } = newUser;
   
-      try {
-        const checkUser = await User.findOne({ email: email });
-        if (checkUser) {
-          return resolve({
-            status: 'error',
-            message: 'Email already exists',
-          });
-        }
+//       try {
+//         const checkUser = await User.findOne({ email: email });
+//         if (checkUser) {
+//           return resolve({
+//             status: 'error',
+//             message: 'Email already exists',
+//           });
+//         }
   
-        const hashPassword = await bcrypt.hash(password, 10);
-        const createUser = await User.create({
-          name,
-          email,
-          password: hashPassword,
-        });
+//         const hashPassword = await bcrypt.hash(password, 10);
+//         const createUser = await User.create({
+//           name,
+//           email,
+//           password: hashPassword,
+//         });
   
-        if (createUser) {
-          resolve({
-            status: 'success',
-            message: 'Created account successfully',
-          });
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
+//         if (createUser) {
+//           resolve({
+//             status: 'success',
+//             message: 'Created account successfully',
+//           });
+//         }
+//       } catch (error) {
+//         reject(error);
+//       }
+//     });
+//   };
   
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
         const { email, password} = userLogin;
-
         try{
             const checkUser = await User.findOne({email:email});
             if (checkUser === null) {
@@ -77,6 +74,7 @@ const loginUser = (userLogin) => {
             // });
             const name = checkUser.name;
             const id = checkUser._id;
+            
             resolve({
                 status: 'success',
                 message: 'Login successfully',
@@ -94,6 +92,7 @@ const loginUser = (userLogin) => {
 const resetPassword = (data) => {
     return new Promise(async (resolve, reject) => {
         const { email} = data;
+        email = email.replace(/\s/g, "");
         try{
             const checkUser = await User.findOne({email:email});
             if (checkUser === null) {
@@ -141,6 +140,7 @@ const resetPassword = (data) => {
 const verifyCode = (data) => {
     return new Promise(async (resolve, reject) => {
         const {code} = data;
+        code = code.replace(/\s/g, "");
         try{
             const checkCode = await Code.findOne({code:code});
             if (checkCode === null) {
@@ -211,6 +211,27 @@ const logoutUser = (data) => {
     })
 }
 
+const getImage = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findOne({ _id: id });
+
+            if (!checkUser) {
+                return resolve({
+                    status: 'error',
+                    message: 'The user is not exist',
+                });
+            }
+            const image = checkUser.image;
+            resolve({
+                image
+            });
+        } catch (error) {
+            console.error('Error updating user:', error);
+            reject(error);
+        }
+    });
+};
 const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -417,7 +438,7 @@ const deleteManyUser = (ids) => {
 }
 
 module.exports = {
-    createUser,
+    //createUser,
     loginUser,
     logoutUser,
     resetPassword,
@@ -426,6 +447,7 @@ module.exports = {
     updateUser,
     decodeToken,
     deleteUser,
+    getImage,
     getAllUser,
     getDetailsUser,
     deleteManyUser,
