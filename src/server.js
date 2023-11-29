@@ -68,32 +68,49 @@ app.post('/api/user/sign-up', upload.single('image'), async (req, res) => {
     }
   });
 
-  app.post('/api/music/create', upload.single('image'), async (req, res) => {
+  app.post('/api/music/create', upload.fields([{ name: 'image', maxCount: 1 }, { name: 'music', maxCount: 1 }]), async (req, res) => {
     try {
-      const image = {
-        data: req.file.buffer,
-        contentType: req.file.mimetype
-      };
-      const { name, genres, singer, description } = req.body;
+        console.log('files', req.files);
 
-      const newUser = new Track({
-        name: name,
-        genres: genres,
-        singer: singer,
-        description:description,
-        image: image
-      });
-  
-      // Save the user to the database
-      await newUser.save();
-  
-      // Send a response
-      res.status(200).json({ status: 'success', message: 'Create music successfully' });
+        const image = req.files && req.files['image'] && req.files['image'][0]
+            ? { data: req.files['image'][0].buffer, contentType: req.files['image'][0].mimetype }
+            : null;
+
+        const music = req.files && req.files['music'] && req.files['music'][0]
+            ? { data: req.files['music'][0].buffer, contentType: req.files['music'][0].mimetype }
+            : null;
+
+        console.log('image', image);
+        console.log('music', music);
+
+        if (!image || !music) {
+            console.log('Missing files');
+            return res.status(400).json({ status: 'error', message: 'Invalid request. Missing files.' });
+        }
+
+        const { user, name, genres, singer, description } = req.body;
+
+        const newUser = new Track({
+            name: name,
+            user: user,
+            genres: genres,
+            singer: singer,
+            description: description,
+            image: image,
+            music: music
+        });
+
+        // Save the user to the database
+        await newUser.save();
+
+        // Send a response
+        res.status(200).json({ status: 'success', message: 'Create music successfully' });
     } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ status: 'error', message: 'Internal server error' });
+        console.error('Error:', error);
+        res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
-  });
+});
+
 
   app.post('/api/user/update-user/:id', upload.single('image'), async (req, res) => {
     console.log(req.body)
