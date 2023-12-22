@@ -80,10 +80,11 @@ const loginUser = (userLogin) => {
                 message: 'Login successfully',
                 id,
                 name,
-                access_token,
+                access_token, 
                 //refresh_token
             });
-        }catch(error){
+            console.log('success login')
+        }catch(error){ 
             reject(error)
         }
     })

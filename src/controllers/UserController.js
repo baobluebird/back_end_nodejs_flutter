@@ -34,7 +34,7 @@ const JwtService = require('../services/JwtService');
 
 const loginUser = async (req, res) => {
     try {
-        
+        console.log('request');
         const {email, password} = req.body
 
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
