@@ -38,6 +38,7 @@ const upload = multer({ storage: storage });
 
 app.post('/api/user/sign-up', upload.single('image'), async (req, res) => {
     try {
+      console.log(req.body)
       const image = {
         data: req.file.buffer,
         contentType: req.file.mimetype
