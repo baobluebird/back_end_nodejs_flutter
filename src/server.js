@@ -87,13 +87,8 @@ app.post('/api/user/sign-up', upload.single('image'), async (req, res) => {
             console.log('Missing files');
             return res.status(400).json({ status: 'error', message: 'Invalid request. Missing files.' });
         }
-<<<<<<< HEAD
         console.log('body',req.body)
         const { user,name, genres, singer, description } = req.body;
-=======
-
-        const { user, name, genres, singer, description } = req.body;
->>>>>>> e4eb2bc10e34137c364ecdbdb19509b745db5d89
 
         const newUser = new Track({
             name: name,
@@ -104,11 +99,6 @@ app.post('/api/user/sign-up', upload.single('image'), async (req, res) => {
             image: image,
             music: music
         });
-
-<<<<<<< HEAD
-=======
-        // Save the user to the database
->>>>>>> e4eb2bc10e34137c364ecdbdb19509b745db5d89
         await newUser.save();
 
         // Send a response
@@ -118,12 +108,6 @@ app.post('/api/user/sign-up', upload.single('image'), async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 });
-
-<<<<<<< HEAD
-
-=======
->>>>>>> e4eb2bc10e34137c364ecdbdb19509b745db5d89
-
   app.post('/api/user/update-user/:id', upload.single('image'), async (req, res) => {
     console.log(req.body)
     try {
